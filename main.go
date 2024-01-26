@@ -12,6 +12,8 @@ func main() {
 	httpContext, httpContextCancel := context.WithTimeout(httpContext, 3*time.Second)
 	defer httpContextCancel()
 
+	loggingHttpContext(httpContext)
+
 	httpClient := http.Client{}
 
 	request, requestError := http.NewRequestWithContext(httpContext, "GET", "https://google.com", nil)
