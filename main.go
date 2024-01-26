@@ -1,14 +1,20 @@
 package main
 
 import (
+	"context"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
 func main() {
+	httpContext := context.Background()
+	httpContext, httpContextCancel := context.WithTimeout(httpContext, 3*time.Second)
+	defer httpContextCancel()
+
 	httpClient := http.Client{}
 
-	request, requestError := http.NewRequest("GET", "https://google.com", nil)
+	request, requestError := http.NewRequestWithContext(httpContext, "GET", "https://google.com", nil)
 	if requestError != nil {
 		panic(requestError)
 	}
