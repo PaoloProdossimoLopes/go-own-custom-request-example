@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 )
@@ -37,4 +38,26 @@ func main() {
 	}
 
 	println(responseBody)
+
+	http.HandleFunc("/", getHandlerWithContext)
+	http.ListenAndServe(":8080", nil)
+}
+
+func getHandlerWithContext(w http.ResponseWriter, r *http.Request) {
+	requestContext := r.Context()
+	log.Println("Request iniciada")
+	defer log.Print("Request finalziada")
+
+	select {
+	case <-time.After(5 * time.Second):
+		const message = "Request processada com sucesso"
+		log.Println(message)
+		w.Write([]byte(message))
+		return
+
+	case <-requestContext.Done():
+		log.Println("Request cancelada pelo client")
+		//Aqui pode para tudo que esta sendo feito pois a requisição foi cancelada
+		return
+	}
 }
